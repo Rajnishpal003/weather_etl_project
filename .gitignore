@@ -1,0 +1,16 @@
+# Python bytecode and caches
+__pycache__/
+*.py[cod]
+
+# Virtual environment
+.venv/
+
+# Environment variables
+.env
+
+# Logs
+*.log
+cron_weather.log
+
+# macOS system file
+.DS_Store
