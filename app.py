@@ -4,19 +4,14 @@ import requests
 import psycopg2
 from datetime import datetime
 import os
-from dotenv import load_dotenv
 
-# Load env variables
-load_dotenv()
-
-# Streamlit page config
+# Streamlit config
 st.set_page_config(page_title="Weather ETL Dashboard", layout="centered")
-
 st.title("🌦️ Weather ETL Dashboard")
 
-# Load config
-API_KEY = os.getenv("API_KEY")
-CITY = os.getenv("CITY", "London")
+# ENV VARS for production/deployment
+API_KEY = os.getenv("API_KEY")  # from OpenWeather
+CITY = os.getenv("CITY", "London")  # Default
 
 DB_CONFIG = {
     "dbname": os.getenv("DB_NAME"),
@@ -26,7 +21,7 @@ DB_CONFIG = {
     "port": os.getenv("DB_PORT"),
 }
 
-# Function to fetch weather
+# --- Weather fetcher ---
 def fetch_weather(city):
     try:
         st.write(f"🌤️ Fetching weather for **{city}**...")
@@ -34,7 +29,6 @@ def fetch_weather(city):
         res = requests.get(url)
         res.raise_for_status()
         data = res.json()
-
         return {
             "city": city,
             "temperature": data["main"]["temp"],
@@ -46,22 +40,12 @@ def fetch_weather(city):
         st.error(f"❌ Failed to fetch weather: {e}")
         return None
 
-# Function to insert into database
+# --- Insert to Render DB ---
 def insert_weather(data):
     try:
         st.write(f"⏳ Inserting data into DB: {data}")
         conn = psycopg2.connect(**DB_CONFIG)
         cur = conn.cursor()
-        cur.execute("""
-            CREATE TABLE IF NOT EXISTS weather_data (
-                id SERIAL PRIMARY KEY,
-                city TEXT,
-                temperature REAL,
-                humidity INTEGER,
-                description TEXT,
-                timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-            )
-        """)
         cur.execute("""
             INSERT INTO weather_data (city, temperature, humidity, description, timestamp)
             VALUES (%s, %s, %s, %s, %s)
@@ -73,7 +57,7 @@ def insert_weather(data):
     except Exception as e:
         st.error(f"❌ DB Insert Error: {e}")
 
-# Function to fetch data from DB
+# --- Fetch from Render DB ---
 def fetch_all_data():
     try:
         conn = psycopg2.connect(**DB_CONFIG)
@@ -93,13 +77,12 @@ def fetch_all_data():
         st.error(f"❌ Error fetching data: {e}")
         return pd.DataFrame()
 
-# UI button
+# --- UI ---
 if st.button("📥 Fetch Weather Data"):
     weather = fetch_weather(CITY)
     if weather:
         insert_weather(weather)
 
-# Show historical data
 st.subheader("📊 Historical Weather Trends")
 data = fetch_all_data()
 
