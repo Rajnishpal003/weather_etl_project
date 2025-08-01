@@ -4,14 +4,17 @@ import requests
 import psycopg2
 from datetime import datetime
 import os
+from dotenv import load_dotenv
 
-# Streamlit config
+# Load environment variables
+load_dotenv()
+
 st.set_page_config(page_title="Weather ETL Dashboard", layout="centered")
 st.title("🌦️ Weather ETL Dashboard")
 
-# ENV VARS for production/deployment
-API_KEY = os.getenv("API_KEY")  # from OpenWeather
-CITY = os.getenv("CITY", "London")  # Default
+# Configs
+API_KEY = os.getenv("API_KEY")
+CITY = os.getenv("CITY", "London")
 
 DB_CONFIG = {
     "dbname": os.getenv("DB_NAME"),
@@ -21,7 +24,7 @@ DB_CONFIG = {
     "port": os.getenv("DB_PORT"),
 }
 
-# --- Weather fetcher ---
+# Fetch weather data
 def fetch_weather(city):
     try:
         st.write(f"🌤️ Fetching weather for **{city}**...")
@@ -40,7 +43,7 @@ def fetch_weather(city):
         st.error(f"❌ Failed to fetch weather: {e}")
         return None
 
-# --- Insert to Render DB ---
+# Insert data
 def insert_weather(data):
     try:
         st.write(f"⏳ Inserting data into DB: {data}")
@@ -57,7 +60,7 @@ def insert_weather(data):
     except Exception as e:
         st.error(f"❌ DB Insert Error: {e}")
 
-# --- Fetch from Render DB ---
+# Fetch all data
 def fetch_all_data():
     try:
         conn = psycopg2.connect(**DB_CONFIG)
@@ -77,12 +80,13 @@ def fetch_all_data():
         st.error(f"❌ Error fetching data: {e}")
         return pd.DataFrame()
 
-# --- UI ---
+# UI actions
 if st.button("📥 Fetch Weather Data"):
     weather = fetch_weather(CITY)
     if weather:
         insert_weather(weather)
 
+# Display data
 st.subheader("📊 Historical Weather Trends")
 data = fetch_all_data()
 

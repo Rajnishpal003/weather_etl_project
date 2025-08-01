@@ -7,7 +7,9 @@ from datetime import datetime
 from dotenv import load_dotenv
 
 # Load environment variables
-load_dotenv()
+if os.path.exists(".env"):
+    load_dotenv()
+
 
 API_KEY = os.getenv("API_KEY")
 DB_CONFIG = {
