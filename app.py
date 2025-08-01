@@ -14,7 +14,15 @@ st.title("🌦️ Weather ETL Dashboard")
 
 # Configs
 API_KEY = os.getenv("API_KEY")
-CITY = os.getenv("CITY", "London")
+DEFAULT_CITIES = ["London", "New York", "Tokyo", "Delhi", "Paris", "Sydney", "Dubai", "Berlin", "Toronto", "Beijing"]
+
+st.sidebar.header("🌍 Choose a City")
+selected_city = st.sidebar.selectbox("Select a city", DEFAULT_CITIES)
+custom_city = st.sidebar.text_input("Or enter any city")
+
+# Use custom city if provided
+CITY = custom_city.strip() if custom_city else selected_city
+
 
 DB_CONFIG = {
     "dbname": os.getenv("DB_NAME"),
@@ -81,8 +89,9 @@ def fetch_all_data():
         return pd.DataFrame()
 
 # UI actions
-if st.button("📥 Fetch Weather Data"):
+if st.button(f"📥 Fetch Weather for {CITY}"):
     weather = fetch_weather(CITY)
+
     if weather:
         insert_weather(weather)
 
