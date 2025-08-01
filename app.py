@@ -9,7 +9,8 @@ import os
 load_dotenv()
 
 # Build DB connection string from .env
-DB_URL = f"postgresql+psycopg2://{os.getenv('DB_USER')}:{os.getenv('DB_PASS')}@{os.getenv('DB_HOST')}:{os.getenv('DB_PORT')}/{os.getenv('DB_NAME')}"
+# DB_URL = f"postgresql+psycopg2://{os.getenv('DB_USER')}:{os.getenv('DB_PASS')}@{os.getenv('DB_HOST')}:{os.getenv('DB_PORT')}/{os.getenv('DB_NAME')}"
+DB_URL = os.getenv("DB_URL")
 
 # City options
 CITIES = ["London", "New York", "Delhi", "Tokyo", "Berlin", "Mumbai", "Paris"]
