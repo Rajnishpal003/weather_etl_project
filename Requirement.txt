@@ -1,6 +1,6 @@
 streamlit
-psycopg2-binary
-python-dotenv
-requests
-SQLAlchemy
 pandas
+sqlalchemy
+psycopg2-binary
+requests           # if your ETL uses APIs
+python-dotenv      # optional, for managing secrets

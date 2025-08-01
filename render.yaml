@@ -1,0 +1,17 @@
+services:
+  - type: web
+    name: weather-dashboard
+    env: python
+    buildCommand: pip install -r requirements.txt
+    startCommand: streamlit run app.py --server.port 10000 --server.enableCORS false
+    envVars:
+      - key: DB_USER
+        value: rajnishpalsingh
+      - key: DB_PASS
+        value: Rajnish123
+      - key: DB_NAME
+        value: weatherdb
+      - key: DB_HOST
+        value: your-db-host.render.com
+      - key: DB_PORT
+        value: 5432
